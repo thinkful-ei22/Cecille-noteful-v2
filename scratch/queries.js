@@ -3,6 +3,8 @@
 const knex = require('../knex');
 
 let searchTerm = 'gaga';
+
+//GET ALL NOTES THAT ACCEPT A SEARCH TERM
 knex
   .select('notes.id', 'title', 'content')
   .from('notes')
