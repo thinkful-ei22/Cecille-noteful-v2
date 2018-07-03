@@ -12,13 +12,32 @@ const router = express.Router();
 
 const knex = require('../knex');
 
-// Get All (and search by query)
-router.get('/', (req, res, next) => {
-  const { searchTerm } = req.query;
+// Get All (and search by query) ------------OLD VERSION
+// router.get('/', (req, res, next) => {
+//   const { searchTerm } = req.query;
+//
+//   notes.filter(searchTerm)
+//     .then(list => {
+//       res.json(list);
+//     })
+//     .catch(err => {
+//       next(err);
+//     });
+// });
 
-  notes.filter(searchTerm)
-    .then(list => {
-      res.json(list);
+router.get('/', (req, res, next) => {
+  const searchTerm = req.query.searchTerm;
+
+  knex.select('id', 'title', 'content')
+    .from('notes')
+    .modify(function (queryBuilder) {
+      if (searchTerm) {
+        queryBuilder.where('title', 'like', `%${searchTerm}%`);
+      }
+    })
+    .orderBy('notes.id')
+    .then(results => {
+      res.json(results);
     })
     .catch(err => {
       next(err);
