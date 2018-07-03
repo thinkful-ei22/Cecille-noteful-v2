@@ -161,17 +161,31 @@ router.post('/', (req, res, next) => {
     }));
 });
 
-// Delete an item
+// Delete an item------------------------------------------OLD VERSION
+// router.delete('/:id', (req, res, next) => {
+//   const id = req.params.id;
+//
+//   notes.delete(id)
+//     .then(() => {
+//       res.sendStatus(204);
+//     })
+//     .catch(err => {
+//       next(err);
+//     });
+// });
+//
 router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
 
-  notes.delete(id)
-    .then(() => {
-      res.sendStatus(204);
+  knex('notes')
+    .where('id', `${id}`)
+    .del()
+    .then(note => {
+      res.json(note).status(204)
     })
-    .catch(err => {
-      next(err);
-    });
-});
+    .catch((err => {
+      console.error(err)
+    }));
+})
 
 module.exports = router;
