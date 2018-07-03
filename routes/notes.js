@@ -38,23 +38,44 @@ router.get('/', (req, res, next) => {
     .orderBy('notes.id')
     .then(results => {
       res.json(results);
+      res.status(200).send('OK')
     })
     .catch(err => {
       next(err);
     });
 });
 
-// Get a single item
+// Get a single item ------------------------OLD VERSION
+// router.get('/:id', (req, res, next) => {
+//   const id = req.params.id;
+//
+//   notes.find(id)
+//     .then(item => {
+//       if (item) {
+//         res.json(item);
+//       } else {
+//         next();
+//       }
+//     })
+//     .catch(err => {
+//       next(err);
+//     });
+// });
+
 router.get('/:id', (req, res, next) => {
   const id = req.params.id;
 
-  notes.find(id)
-    .then(item => {
-      if (item) {
-        res.json(item);
-      } else {
-        next();
+  knex
+    .first('id', 'title', 'content')
+    .from('notes')
+    .modify(function (queryBuilder) {
+      if (id) {
+        queryBuilder.where('notes.id', `${id}`)
       }
+    })
+    .then(note => {
+      res.json(note)
+      res.status(200).send('OK')
     })
     .catch(err => {
       next(err);
