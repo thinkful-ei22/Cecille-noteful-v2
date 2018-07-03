@@ -116,27 +116,49 @@ router.put('/:id', (req, res, next) => {
     });
 });
 
-// Post (insert) an item
+// Post (insert) an item------------------------OLD VERSION
+// router.post('/', (req, res, next) => {
+//   const { title, content } = req.body;
+//
+//   const newItem = { title, content };
+//   /***** Never trust users - validate input *****/
+//   if (!newItem.title) {
+//     const err = new Error('Missing `title` in request body');
+//     err.status = 400;
+//     return next(err);
+//   }
+//
+//   notes.create(newItem)
+//     .then(item => {
+//       if (item) {
+//         res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
+//       }
+//     })
+//     .catch(err => {
+//       next(err);
+//     });
+// });
+
 router.post('/', (req, res, next) => {
   const { title, content } = req.body;
 
   const newItem = { title, content };
-  /***** Never trust users - validate input *****/
+
   if (!newItem.title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
-    return next(err);
+      const err = new Error('Missing `title` in request body');
+      err.status = 400;
+      return next(err);
   }
 
-  notes.create(newItem)
-    .then(item => {
-      if (item) {
-        res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
-      }
+  knex('notes')
+    .insert(newItem)
+    .returning(['id', 'title', 'content'])
+    .then(note => {
+      res.location(`http://${req.headers.host}/notes/${note[0].id}`).status(201).json(note[0]);
     })
-    .catch(err => {
-      next(err);
-    });
+    .catch((err => {
+      console.error(err)
+    }));
 });
 
 // Delete an item
