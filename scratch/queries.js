@@ -5,6 +5,7 @@ const knex = require('../knex');
 let searchTerm = 'gaga';
 
 //GET ALL NOTES THAT ACCEPT A SEARCH TERM
+
 knex
   .select('notes.id', 'title', 'content')
   .from('notes')
@@ -55,6 +56,19 @@ knex('notes')
   .then(note => {
     console.log(note)
     console.log('Status 201 - NEW NOTE')
+  })
+  .catch((err => {
+    console.error(err)
+  }));
+
+//DELETE NOTES
+
+knex('notes')
+  .where('id', 1015)
+  .del()
+  .then(note => {
+    console.log(note)
+    console.log('Status 204 - DELETED NOTE')
   })
   .catch((err => {
     console.error(err)
