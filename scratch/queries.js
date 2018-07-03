@@ -33,3 +33,16 @@ knex
   .catch((err => {
     console.error(err)
   }));
+
+//UPDATE NOTES
+
+knex('notes')
+  .update('title', '7 things lady gaga has in common with dogs')
+  .where('id', 1003)
+  .then(note => {
+    console.log(note)
+    console.log('Status 200 - OK')
+  })
+  .catch((err => {
+    console.error(err)
+  }));
