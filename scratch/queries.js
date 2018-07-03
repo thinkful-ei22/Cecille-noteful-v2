@@ -46,3 +46,21 @@ knex('notes')
   .catch((err => {
     console.error(err)
   }));
+
+//CREATE NOTES
+
+knex('notes')
+  .insert({ title: 'testNoteTitle', content: 'testNoteContent'})
+  .returning('id', 'title', 'content')
+  .then(note => {
+    console.log(note)
+    console.log('Status 201 - NEW NOTE')
+  })
+  .catch((err => {
+    console.error(err)
+  }));
+
+// DISPLAY FULL DATABASE - FOR TESTING ONLY
+// knex.select('id', 'title', 'content')
+//   .from('notes')
+//   .then(console.log);
