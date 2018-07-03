@@ -20,3 +20,16 @@ knex
   .catch(err => {
     console.error(err);
   });
+
+//GET NOTES BY ACCEPTING AN ID
+
+knex
+  .first('id', 'title', 'content')
+  .from('notes')
+  .where('id', 1000)
+  .then(note => {
+    console.log(note)
+  })
+  .catch((err => {
+    console.error(err)
+  }));
