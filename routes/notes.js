@@ -38,7 +38,7 @@ router.get('/', (req, res, next) => {
     .orderBy('notes.id')
     .then(results => {
       res.json(results);
-      res.status(200).send('OK')
+      res.status(200).send('OK');
     })
     .catch(err => {
       next(err);
@@ -74,8 +74,12 @@ router.get('/:id', (req, res, next) => {
       }
     })
     .then(note => {
-      res.json(note)
-      res.status(200).send('OK')
+      if (`!${id}`) {
+        res.json(note);
+        res.status(200).send('OK');
+      } else {
+        res.status(404).send('NOT FOUND');
+      }
     })
     .catch(err => {
       next(err);
@@ -115,6 +119,7 @@ router.get('/:id', (req, res, next) => {
 //       next(err);
 //     });
 // });
+
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
 
@@ -139,12 +144,13 @@ router.put('/:id', (req, res, next) => {
     .update({title:`${updateObj.title}`, content:`${updateObj.content}`})
     .where('id', `${id}`)
     .then(note => {
-      res.json(note).status(200)
+      res.json(note).status(200).send('OK')
     })
     .catch(err => {
       next(err);
     });
 })
+
 // Post (insert) an item------------------------OLD VERSION
 // router.post('/', (req, res, next) => {
 //   const { title, content } = req.body;
@@ -183,10 +189,10 @@ router.post('/', (req, res, next) => {
     .insert(newItem)
     .returning(['id', 'title', 'content'])
     .then(note => {
-      res.location(`http://${req.headers.host}/notes/${note[0].id}`).status(201).json(note[0]);
+      res.location(`http://${req.headers.host}/notes/${note[0].id}`).status(201).send('CREATED NOTE').json(note[0]);
     })
     .catch((err => {
-      console.error(err)
+      console.error(err);
     }));
 });
 
@@ -203,6 +209,7 @@ router.post('/', (req, res, next) => {
 //     });
 // });
 //
+
 router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
 
@@ -210,10 +217,10 @@ router.delete('/:id', (req, res, next) => {
     .where('id', `${id}`)
     .del()
     .then(note => {
-      res.json(note).status(204)
+      res.json(note).status(204).send('DELETED NOTE');
     })
     .catch((err => {
-      console.error(err)
+      console.error(err);
     }));
 })
 
