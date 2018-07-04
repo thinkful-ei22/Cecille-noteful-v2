@@ -82,7 +82,39 @@ router.get('/:id', (req, res, next) => {
     });
 });
 
-// Put update an item
+// Put update an item-------------------------------OLD VERSION
+// router.put('/:id', (req, res, next) => {
+//   const id = req.params.id;
+//
+//   /***** Never trust users - validate input *****/
+//   const updateObj = {};
+//   const updateableFields = ['title', 'content'];
+//
+//   updateableFields.forEach(field => {
+//     if (field in req.body) {
+//       updateObj[field] = req.body[field];
+//     }
+//   });
+//
+//   /***** Never trust users - validate input *****/
+//   if (!updateObj.title) {
+//     const err = new Error('Missing `title` in request body');
+//     err.status = 400;
+//     return next(err);
+//   }
+//
+//   notes.update(id, updateObj)
+//     .then(item => {
+//       if (item) {
+//         res.json(item);
+//       } else {
+//         next();
+//       }
+//     })
+//     .catch(err => {
+//       next(err);
+//     });
+// });
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
 
@@ -103,19 +135,16 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  notes.update(id, updateObj)
-    .then(item => {
-      if (item) {
-        res.json(item);
-      } else {
-        next();
-      }
+  knex('notes')
+    .update({title:`${updateObj.title}`, content:`${updateObj.content}`})
+    .where('id', `${id}`)
+    .then(note => {
+      res.json(note).status(200)
     })
     .catch(err => {
       next(err);
     });
-});
-
+})
 // Post (insert) an item------------------------OLD VERSION
 // router.post('/', (req, res, next) => {
 //   const { title, content } = req.body;
