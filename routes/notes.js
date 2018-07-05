@@ -26,13 +26,23 @@ const knex = require('../knex');
 // });
 
 router.get('/', (req, res, next) => {
-  const searchTerm = req.query.searchTerm;
+  const { searchTerm, folderId } = req.query;
 
-  knex.select('id', 'title', 'content')
+  console.log('HELLO LOOK HERE!!!!')
+  //knex.select('id', 'title', 'content') - Pre folders.js
+  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
     .from('notes')
+    //Adding the leftJoin!
+    .leftJoin('folders', 'notes.folder_id', 'folders.id')
     .modify(function (queryBuilder) {
       if (searchTerm) {
         queryBuilder.where('title', 'like', `%${searchTerm}%`);
+      }
+    })
+    //Adding another if clause here for folders
+    .modify(function (queryBuilder) {
+      if (folderId) {
+        queryBuilder.where('folder_id', folderId);
       }
     })
     .orderBy('notes.id')
