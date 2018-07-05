@@ -28,7 +28,6 @@ const knex = require('../knex');
 router.get('/', (req, res, next) => {
   const { searchTerm, folderId } = req.query;
 
-  console.log('HELLO LOOK HERE!!!!')
   //knex.select('id', 'title', 'content') - Pre folders.js
   knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
     .from('notes')
@@ -73,23 +72,19 @@ router.get('/', (req, res, next) => {
 // });
 
 router.get('/:id', (req, res, next) => {
-  const id = req.params.id;
-
+  const { id } = req.params;
+  console.log('HEY LOOK HERE!!!');
   knex
-    .first('id', 'title', 'content')
+    .select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
     .from('notes')
+    .leftJoin('folders', 'notes.folder_id', 'folders.id')
     .modify(function (queryBuilder) {
       if (id) {
         queryBuilder.where('notes.id', `${id}`)
       }
     })
     .then(note => {
-      if (`!${id}`) {
-        res.json(note);
-        res.status(200).send('OK');
-      } else {
-        res.status(404).send('NOT FOUND');
-      }
+      res.json(note[0]);
     })
     .catch(err => {
       next(err);
