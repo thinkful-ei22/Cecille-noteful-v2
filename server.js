@@ -24,11 +24,12 @@ app.use(cors());
 // Parse request body
 app.use(express.json());
 
+
 // Mount notes router on "/api"
 app.use('/api/notes', notesRouter);
 
-//Mount folder router on "/api"
-app.use('/api/notes', folderRouter);
+//Mount folder router 
+app.use('/folders', foldersRouter);
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
