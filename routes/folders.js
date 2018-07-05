@@ -68,4 +68,26 @@ router.put('/:id', (req, res, next) => {
     });
 })
 
+router.post('/', (req, res, next) => {
+  const { name } = req.body;
+
+  const newFolder = { name };
+
+  if (!newFolder.name) {
+      const err = new Error('Missing `name` in request body');
+      err.status = 400;
+      return next(err);
+  }
+
+  knex('folders')
+    .insert(newFolder)
+    .returning(['id', 'name'])
+    .then(folder => {
+      res.location(`http://${req.headers.host}/folders/${folder[0].id}`).status(201).send('CREATED FOLDER').json(folder[0]);
+    })
+    .catch((err => {
+      next(err);
+    }));
+});
+
 module.exports = router;
