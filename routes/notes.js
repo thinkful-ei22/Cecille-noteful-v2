@@ -73,7 +73,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
-  console.log('HEY LOOK HERE!!!');
+
   knex
     .select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
     .from('notes')
@@ -194,20 +194,16 @@ router.post('/', (req, res, next) => {
       return next(err);
   }
 
-  let noteId;
-
   knex('notes')
     .insert(newItem)
     .into('notes')
     .returning('id')
-    .then(([id], [folderName]) => {
-      noteId = id;
-
+    .then(([noteId]) => {
       // Using the new id, select the new note and the folder
       return knex.select('notes.id', 'title', 'content', 'folder_id as folderId', 'folders.name as folderName')
         .from('notes')
         .leftJoin('folders', 'notes.folder_id', 'folders.id')
-        .where('notes.id', noteId, 'folders.id', 'folderId');
+        .where('notes.id', noteId);
     })
     .then(([result]) => {
       res.location(`${req.originalUrl}/${result.id}`).status(201).json(result);
