@@ -31,10 +31,12 @@ router.get('/', (req, res, next) => {
   const { searchTerm, folderId } = req.query;
 
   //knex.select('id', 'title', 'content') - Pre folders.js
-  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName')
+  knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName', 'notes_tags.note_id', 'tags.id as tagId', 'tags.name as tagName')
     .from('notes')
     //Adding the leftJoin!
     .leftJoin('folders', 'notes.folder_id', 'folders.id')
+    .leftJoin('notes_tags', 'notes.id', 'notes_tags.note_id')
+    .leftJoin('tags', 'tags.id', 'notes_tags.tag_id')
     .modify(function (queryBuilder) {
       if (searchTerm) {
         queryBuilder.where('title', 'like', `%${searchTerm}%`);
@@ -47,9 +49,13 @@ router.get('/', (req, res, next) => {
       }
     })
     .orderBy('notes.id')
-    .then(results => {
-      res.json(results);
-      res.status(200).send('OK');
+    .then(result => {
+      if (result) {
+        const hydrated = hydrateNotes(result);
+        res.json(hydrated);
+      } else {
+        next();
+      }
     })
     .catch(err => {
       next(err);
