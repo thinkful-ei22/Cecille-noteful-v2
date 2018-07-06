@@ -13,6 +13,30 @@ router.get('/', (req, res, next) => {
     .catch(err => next(err));
 });
 
+router.get('/:id', (req, res, next) => {
+  const { id } = req.params;
+
+  knex
+    .first('id', 'name')
+    .from('tags')
+    .modify(function (queryBuilder) {
+      if (id) {
+        queryBuilder.where('tags.id', `${id}`)
+      }
+    })
+    .then(result => {
+      if (`!${id}`) {
+        res.json(result);
+        res.status(200);
+      } else {
+        res.status(404);
+      }
+    })
+    .catch(err => {
+      next(err);
+    });
+});
+
 router.post('/', (req, res, next) => {
   const { name } = req.body;
 
