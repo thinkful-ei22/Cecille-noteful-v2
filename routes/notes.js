@@ -126,17 +126,11 @@ router.get('/:id', (req, res, next) => {
 // });
 
 router.put('/:id', (req, res, next) => {
-  const id = req.params.id;
+  const { id } = req.params;
 
   /***** Never trust users - validate input *****/
-  const updateObj = {};
-  const updateableFields = ['title', 'content'];
-
-  updateableFields.forEach(field => {
-    if (field in req.body) {
-      updateObj[field] = req.body[field];
-    }
-  });
+  const {title, content, folderId} = req.body;
+  const updateObj = {title, content, folder_id: folderId};
 
   /***** Never trust users - validate input *****/
   if (!updateObj.title) {
@@ -146,10 +140,18 @@ router.put('/:id', (req, res, next) => {
   }
 
   knex('notes')
-    .update({title:`${updateObj.title}`, content:`${updateObj.content}`})
-    .where('id', `${id}`)
-    .then(note => {
-      res.json(note).status(200).send('OK')
+    .where('id', id)
+    .update(updateObj)
+    .then((...args) => {
+      console.log('after update', args)
+      return knex
+        .select('notes.id', 'title', 'content', 'folder_id as folderId', 'folders.name as folderName')
+        .from('notes')
+        .leftJoin('folders', 'notes.folder_id', 'folders.id')
+        .where('notes.id', id)
+    })
+    .then(([note]) => {
+      res.json(note).status(200);
     })
     .catch(err => {
       next(err);
