@@ -28,7 +28,7 @@ const hydrateNotes = require('../utils/hydrateNotes');
 // });
 
 router.get('/', (req, res, next) => {
-  const { searchTerm, folderId } = req.query;
+  const { searchTerm, folderId, tagId } = req.query;
 
   //knex.select('id', 'title', 'content') - Pre folders.js
   knex.select('notes.id', 'title', 'content', 'folders.id as folderId', 'folders.name as folderName', 'notes_tags.note_id', 'tags.id as tagId', 'tags.name as tagName')
@@ -46,6 +46,11 @@ router.get('/', (req, res, next) => {
     .modify(function (queryBuilder) {
       if (folderId) {
         queryBuilder.where('folder_id', folderId);
+      }
+    })
+    .modify(function (queryBuilder) {
+      if (tagId) {
+        queryBuilder.where('tag_id', tagId);
       }
     })
     .orderBy('notes.id')
