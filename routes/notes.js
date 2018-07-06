@@ -12,6 +12,8 @@ const router = express.Router();
 
 const knex = require('../knex');
 
+const hydrateNotes = require('../utils/hydrateNotes');
+
 // Get All (and search by query) ------------OLD VERSION
 // router.get('/', (req, res, next) => {
 //   const { searchTerm } = req.query;
