@@ -149,8 +149,8 @@ router.put('/:id', (req, res, next) => {
   const { id } = req.params;
 
   /***** Never trust users - validate input *****/
-  const {title, content, folderId} = req.body;
-  const updateObj = {title, content, folder_id: folderId};
+  const { title, content, folderId } = req.body;
+  const updateObj = { title, content, folder_id: folderId };
 
   /***** Never trust users - validate input *****/
   if (!updateObj.title) {
