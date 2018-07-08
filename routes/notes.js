@@ -57,7 +57,7 @@ router.get('/', (req, res, next) => {
     .then(result => {
       if (result) {
         const hydrated = hydrateNotes(result);
-        res.json(hydrated[0]);
+        res.json(hydrated);
       } else {
         next();
       }
